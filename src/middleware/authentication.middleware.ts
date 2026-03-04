@@ -36,7 +36,6 @@ const authenticate = async (
     req.user = user as User
     next();
   } catch (error) {
-    console.log(error)
     next(CustomError.unauthorized());
     return;
   }

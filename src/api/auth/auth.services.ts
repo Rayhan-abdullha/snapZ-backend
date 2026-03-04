@@ -22,7 +22,6 @@ class AuthService {
       },
     });
   }
-
   async login(email: string, password: string) {
     const user = await prisma.user.findUnique({ where: { email } });
 
@@ -48,7 +47,6 @@ class AuthService {
 
     return { accessToken, refreshToken, user: resUser };
   }
-
   async refreshToken(token: string) {
     try {
       const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET!);
@@ -61,22 +59,32 @@ class AuthService {
       throw new Error("Invalid refresh token");
     }
   }
-
-  async logout(refreshToken: string) {
-    // TODO:Placeholder logic; implement token blacklist if needed
-    return;
+  async getAllUsers() {
+    return await prisma.user.findMany();
   }
-  
+  async deleteUser(userId: string) {
+    return await prisma.$transaction([
+      prisma.post.deleteMany({
+        where: { authorId: userId }
+      }),
+
+      prisma.video.deleteMany({
+        where: { authorId: userId }
+      }),
+
+      prisma.user.delete({
+        where: { id: userId }
+      })
+    ]);
+  }
   async getProfile(userId: string) {
     return await prisma.user.findUnique({ where: { id: userId } });
   }
-
   generateAccessToken(user: any) {
     return jwt.sign({ id: user.id, role: user.role, email: user.email, name: user.name  }, config.secret_access_token || "my_secret_key", {
       expiresIn: "7d",
     });
   }
-
   generateRefreshToken(userId: string) {
     return jwt.sign({ id: userId }, config.secret_access_token || "my_secret_key", {
       expiresIn: "7d",

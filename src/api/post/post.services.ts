@@ -27,15 +27,25 @@ class PostService {
       data: { ...newPost },
     });
   }
-
-  // Create Video / Live Reel
-  async createVideo(userId: string, data: any) {
-    return await prisma.video.create({
-      data: { ...data, authorId: userId },
+  async deletePost(postId: string) {
+    return await prisma.post.delete({ where: { id: postId } });
+  }
+  // Fetch Feed (Posts + Videos)
+  async getAllPosts() {
+    const posts = await prisma.post.findMany({
+      where: { status: 'PUBLISHED' },
+      include: { author: true, _count: { select: { comments: true, likes: true } } },
+      orderBy: { createdAt: 'desc' }
     });
+    
+    const videos = await prisma.video.findMany({
+      where: { status: 'PUBLISHED' },
+      include: { author: true },
+      orderBy: { createdAt: 'desc' }
+    });
+    return { posts, videos };
   }
 
-  // Fetch Feed (Posts + Videos)
   async getFeed() {
     const posts = await prisma.post.findMany({
       where: { status: 'PUBLISHED' },
@@ -50,6 +60,7 @@ class PostService {
     });
     return { posts, videos, liveTv: await this.getLiveTv() };
   }
+  
 
   async getSingleArticle(slug: string) {
     return await prisma.post.findUnique({ where: { slug }, include: { author: true } });

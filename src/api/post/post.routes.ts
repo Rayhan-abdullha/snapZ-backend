@@ -5,8 +5,9 @@ import postController from "./post.controller";
 
 const router = express.Router();
 
-// Public Feed
-router.get("/feed", postController.getFeed);
+// admin
+router.get("/all-posts", middleware.authenticate, middleware.authorization(["ADMIN", "USER"]), postController.getAllPost);
+router.get("/feed", middleware.authenticate, middleware.authorization(["ADMIN"]), postController.getFeed);
 
 // Protected Actions
 router.post(
@@ -15,6 +16,7 @@ router.post(
   middleware.validateRequest(createPostSchema),
   postController.createPost
 );
+router.delete("/delete/:id", middleware.authenticate, middleware.authorization(["ADMIN"]), postController.deletePost);
 router.get("/articles/:slug", postController.getSingleArticle);
 
 export default router;

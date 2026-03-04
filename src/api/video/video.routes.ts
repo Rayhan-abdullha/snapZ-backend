@@ -7,10 +7,8 @@ const router = express.Router();
 // All these routes require a logged-in user
 router.use(middleware.authenticate); 
 
-router.post("/video",
-    middleware.validateRequest(createVideoSchema),
-    
-    contentController.createVideo);
+router.post("/video", middleware.validateRequest(createVideoSchema), contentController.createVideo);
+router.delete("/video/:id", middleware.authenticate, middleware.authorization(["ADMIN"]), contentController.deleteVideo);
 router.post("/comment", middleware.validateRequest(createCommentSchema), contentController.addComment);
 router.post("/like", middleware.validateRequest(toggleLikeSchema), contentController.toggleLike);
 

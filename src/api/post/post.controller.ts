@@ -18,13 +18,34 @@ class PostController extends BaseController {
     } catch (error) { next(error); }
   };
 
-  getFeed = async (req: Request, res: Response, next: NextFunction) => {
+  deletePost = async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.id;
+    try {
+      this.sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Post deleted",
+        data: await postService.deletePost(id)
+      });
+    } catch (error) { next(error); }
+  }
+  getAllPost = async (req: Request, res: Response, next: NextFunction) => {
     try {
       this.sendResponse(res, {
         statusCode: 200,
         success: true,
         message: "Feed retrieved",
-        data: await postService.getFeed()
+        data: await postService.getAllPosts()
+      });
+    } catch (error) { next(error); }
+  };
+    getFeed = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      this.sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Feed retrieved",
+        data: await postService.getAllPosts()
       });
     } catch (error) { next(error); }
   };

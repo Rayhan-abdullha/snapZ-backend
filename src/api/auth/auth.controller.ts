@@ -43,14 +43,26 @@ class AuthController extends BaseController {
       next(error);
     }
   }
-  logout = async (req: Request, res: Response, next: NextFunction) => {
+  getAllUers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { refreshToken } = req.body;
       this.sendResponse(res, {
         statusCode: 200,
         success: true,
-        message: "Logout successful",
-        data: await authService.logout(refreshToken)
+        message: "All Users retrieved",
+        data: await authService.getAllUsers()
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+  deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.params.id
+      this.sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "User deleted",
+        data: await authService.deleteUser(userId)
       });
     } catch (error) {
       next(error);

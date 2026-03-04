@@ -15,8 +15,8 @@ router.post(
   middleware.validateRequest(loginSchema),
   authController.login
 );
-router.get("/user/me", middleware.authenticate, authController.getUserProfile);
-// router.post("/refresh-token", authController.refreshToken);
-// router.post("/logout", authController.logout);
+router.get("/users/me", middleware.authenticate, authController.getUserProfile);
+router.get("/users", middleware.authenticate, middleware.authorization(["ADMIN"]), authController.getAllUers);
+router.delete("/users/:id", middleware.authenticate, middleware.authorization(["ADMIN"]), authController.deleteUser);
 
 export default router;
