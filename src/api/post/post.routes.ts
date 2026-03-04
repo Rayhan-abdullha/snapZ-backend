@@ -7,7 +7,7 @@ const router = express.Router();
 
 // admin
 router.get("/all-posts", middleware.authenticate, middleware.authorization(["ADMIN"]), postController.getAllPost);
-router.get("/feed", middleware.authenticate, middleware.authorization(["ADMIN", "USER"]), postController.getFeed);
+router.get("/feed", postController.getFeed);
 
 // Protected Actions
 router.post(
