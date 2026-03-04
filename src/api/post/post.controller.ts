@@ -45,7 +45,7 @@ class PostController extends BaseController {
         statusCode: 200,
         success: true,
         message: "Feed retrieved",
-        data: await postService.getAllPosts()
+        data: await postService.getFeed()
       });
     } catch (error) { next(error); }
   };

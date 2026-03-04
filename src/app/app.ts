@@ -20,6 +20,14 @@ app.use(
   }),
 );
 
+app.get("/", (req: Request, res: Response) => {
+  res.status(200).json({
+    status: 'ok',
+    code: 200,
+    msg: "server is running..."
+  })
+})
+
 const swaggerDocs = YML.load(path.join(__dirname, `../docs`, 'api-docs.yml'));
 app.use('/api/v1/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 

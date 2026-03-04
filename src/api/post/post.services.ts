@@ -8,20 +8,14 @@ class PostService {
     if (role === UserRole.USER && !data.content) {
       throw new Error("content is required");
     }
-    if (role === UserRole.ADMIN && !data.blocks) {
-      throw new Error("blocks is required");
-    }
     const newPost: any = {
       authorId: userId,
       title: data.title,
       slug: data.slug,
       category: data.category,
       coverImage: data.coverImage,
-    }
-    if (role === UserRole.ADMIN) {
-      newPost.blocks = data.blocks;
-    } else {
-      newPost.content = data.content;
+      content: data.content || null,
+      blocks: data.blocks || null
     }
     return await prisma.post.create({
       data: { ...newPost },

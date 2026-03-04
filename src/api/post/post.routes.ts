@@ -6,8 +6,8 @@ import postController from "./post.controller";
 const router = express.Router();
 
 // admin
-router.get("/all-posts", middleware.authenticate, middleware.authorization(["ADMIN", "USER"]), postController.getAllPost);
-router.get("/feed", middleware.authenticate, middleware.authorization(["ADMIN"]), postController.getFeed);
+router.get("/all-posts", middleware.authenticate, middleware.authorization(["ADMIN"]), postController.getAllPost);
+router.get("/feed", middleware.authenticate, middleware.authorization(["ADMIN", "USER"]), postController.getFeed);
 
 // Protected Actions
 router.post(
