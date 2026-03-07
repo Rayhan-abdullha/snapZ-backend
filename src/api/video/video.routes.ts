@@ -8,8 +8,8 @@ const router = express.Router();
 router.use(middleware.authenticate); 
 
 router.post("/video", middleware.validateRequest(createVideoSchema), contentController.createVideo);
-router.delete("/video/:id", middleware.authenticate, middleware.authorization(["ADMIN"]), contentController.deleteVideo);
-router.post("/comment", middleware.validateRequest(createCommentSchema), contentController.addComment);
-router.post("/like", middleware.validateRequest(toggleLikeSchema), contentController.toggleLike);
+
+router.post("/comments", middleware.validateRequest(createCommentSchema), contentController.addComment);
+router.post("/likes", middleware.validateRequest(toggleLikeSchema), contentController.toggleLike);
 
 export default router;

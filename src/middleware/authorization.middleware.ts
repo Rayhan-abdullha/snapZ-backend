@@ -20,7 +20,6 @@ const authorization = (permissions: string[]) => {
     const user = await prisma.user.findUnique({
       where: { id: userId }
     });
-    console.log(user)
 
     if (!user) {
       next(lib.CustomError.notFound());

@@ -41,6 +41,7 @@ const errorMiddleware: ErrorRequestHandler = (err, _req, res, _next) => {
       })),
     };
   }
+  console.log(error)
 
   res.status(error.status).json(error);
 };

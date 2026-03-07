@@ -8,9 +8,6 @@ class ContentService {
       data: { ...data, authorId: userId },
     });
   }
-  async deleteVideo(videoId: string) {
-    return await prisma.video.delete({ where: { id: videoId } });
-  }
 
   // Create Comment (supports replies)
   async createComment(userId: string, data: any) {

@@ -17,15 +17,29 @@ class PostController extends BaseController {
       });
     } catch (error) { next(error); }
   };
-
-  deletePost = async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
+  getMyPost = async (req: Request, res: Response, next: NextFunction) => {
+    const id = req.params.userId
     try {
       this.sendResponse(res, {
         statusCode: 200,
         success: true,
-        message: "Post deleted",
-        data: await postService.deletePost(id)
+        message: "Feed retrieved",
+        data: await postService.getMyPosts(id)
+      });
+    } catch (error) { next(error); }
+  }
+  deletePost = async (req: Request, res: Response, next: NextFunction) => {
+    const param = req.params.id;
+    const query = req.query
+    if (!query) {
+      next("query is required!")
+    }
+    try {
+      this.sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Video Reel deleted",
+        data: await postService.deletePost(param, query?.type as string)
       });
     } catch (error) { next(error); }
   }

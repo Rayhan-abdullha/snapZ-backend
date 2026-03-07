@@ -14,18 +14,6 @@ class ContentController extends BaseController {
       });
     } catch (error) { next(error); }
   };
-
-  deleteVideo = async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
-    try {
-      this.sendResponse(res, {
-        statusCode: 200,
-        success: true,
-        message: "Video Reel deleted",
-        data: await contentService.deleteVideo(id)
-      });
-    } catch (error) { next(error); }
-  }
   addComment = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = (req as any).user.id;
