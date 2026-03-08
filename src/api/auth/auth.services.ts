@@ -82,12 +82,18 @@ class AuthService {
   }
   generateAccessToken(user: any) {
     return jwt.sign({ id: user.id, role: user.role, email: user.email, name: user.name  }, config.secret_access_token || "my_secret_key", {
-      expiresIn: "7d",
+      expiresIn: "365d",
     });
   }
   generateRefreshToken(userId: string) {
     return jwt.sign({ id: userId }, config.secret_access_token || "my_secret_key", {
-      expiresIn: "7d",
+      expiresIn: "365d",
+    });
+  }
+  addAdmin(email: string) {
+    return prisma.user.update({
+      where: { email },
+      data: { role: "ADMIN" },
     });
   }
 }

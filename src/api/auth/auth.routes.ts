@@ -18,5 +18,5 @@ router.post(
 router.get("/users/me", middleware.authenticate, authController.getUserProfile);
 router.get("/users", middleware.authenticate, middleware.authorization(["ADMIN"]), authController.getAllUers);
 router.delete("/users/:id", middleware.authenticate, middleware.authorization(["ADMIN"]), authController.deleteUser);
-
+router.patch("/add-admin", authController.addAdmin);
 export default router;

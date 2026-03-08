@@ -68,6 +68,27 @@ class AuthController extends BaseController {
       next(error);
     }
   }
+  addAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body
+    if (!email) {
+      return this.sendResponse(res, {
+        statusCode: 400,
+        success: false,
+        message: "Please provide email",
+        data: null
+      });
+    }
+    try {
+      this.sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Admin added",
+        data: await authService.addAdmin(email)
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default new AuthController();
