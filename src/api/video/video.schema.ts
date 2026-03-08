@@ -9,18 +9,20 @@ export const createVideoSchema = z.object({
     isLive: z.boolean().default(false),
   }),
 });
-
 export const createCommentSchema = z.object({
   body: z.object({
     message: z.string().min(1, "Comment cannot be empty"),
     postId: z.string().optional(),
     videoId: z.string().optional(),
-    parentId: z.string().optional(), // For threaded replies
-  }).refine(data => data.postId || data.videoId, {
-    message: "Comment must belong to either a Post or a Video",
-  }),
+    parentId: z.string().nullable().optional(),
+  }).refine(
+    (data) => data.postId || data.videoId,
+    {
+      message: "Comment must belong to either a Post or a Video",
+      path: ["postId"],
+    }
+  ),
 });
-
 export const toggleLikeSchema = z.object({
   body: z.object({
     postId: z.string().optional(),

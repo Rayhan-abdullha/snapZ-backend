@@ -45,7 +45,7 @@ class PostService {
     
     const videos = await prisma.video.findMany({
       where: { status: 'PUBLISHED' },
-      include: { author: true },
+      include: { author: true, _count: { select: { comments: true, likes: true } } },
       orderBy: { createdAt: 'desc' }
     });
     return { posts, videos, liveTv: await this.getLiveTv() };
@@ -75,7 +75,23 @@ class PostService {
     return null;
   }
   async getSingleArticle(slug: string) {
-    return await prisma.post.findUnique({ where: { slug }, include: { author: true } });
+    return await prisma.post.findUnique({
+      where: { slug },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+        _count: {
+          select: {
+            comments: true,
+            likes: true
+          }
+        }
+      }
+    });
   }
 
   // Fetch Live Channels only

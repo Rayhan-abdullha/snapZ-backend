@@ -25,7 +25,16 @@ class ContentController extends BaseController {
       });
     } catch (error) { next(error); }
   };
-
+  getPostComments = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      this.sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: "Comments retrieved",
+        data: await contentService.getPostComments(req.params.id, req.query.type as string)
+      });
+    } catch (error) { next(error); }
+  }
   toggleLike = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = (req as any).user.id;

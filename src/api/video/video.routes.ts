@@ -10,6 +10,7 @@ router.use(middleware.authenticate);
 router.post("/video", middleware.validateRequest(createVideoSchema), contentController.createVideo);
 
 router.post("/comments", middleware.validateRequest(createCommentSchema), contentController.addComment);
+router.get("/comments/:id", contentController.getPostComments);
 router.post("/likes", middleware.validateRequest(toggleLikeSchema), contentController.toggleLike);
 
 export default router;
