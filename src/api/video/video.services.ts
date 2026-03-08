@@ -30,53 +30,53 @@ async createComment(userId: string, data: any) {
   });
 }
   async getPostComments(postId: string, type: string) {
-  const comments = await prisma.comment.findMany({
-    where: {
-      // condintion by type if type == 'video' then videoId == videoId else postId == postId
-      [type === "video" ? "videoId" : "postId"]: postId,
-      parentId: null
-    },
-
-    include: {
-      post: {
-        select: {
-          id: true,
-          _count: true
-        }
-      },
-      video: {
-        select: {
-          id: true,
-          _count: true
-        }
+    const comments = await prisma.comment.findMany({
+      where: {
+        // condintion by type if type == 'video' then videoId == videoId else postId == postId
+        [type === "video" ? "videoId" : "postId"]: postId,
+        parentId: null
       },
 
-      author: {
-        select: {
-          id: true,
-          name: true
-        }
-      },
-
-      replies: {
-        include: {
-          author: {
-            select: {
-              id: true,
-              name: true
-            }
+      include: {
+        post: {
+          select: {
+            id: true,
+            _count: true
           }
         },
-        orderBy: {
-          createdAt: "asc"
-        }
-      }
-    },
+        video: {
+          select: {
+            id: true,
+            _count: true
+          }
+        },
 
-    orderBy: {
-      createdAt: "desc"
-    }
-  });
+        author: {
+          select: {
+            id: true,
+            name: true
+          }
+        },
+
+        replies: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true
+              }
+            }
+          },
+          orderBy: {
+            createdAt: "asc"
+          }
+        }
+      },
+
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
 
   return comments;
 }
