@@ -19,6 +19,9 @@ router.post(
   postController.createPost
 );
 router.get("/articles/:slug", postController.getSingleArticle);
+router.post("/bookmarks", middleware.authenticate, postController.addBookmarks);
+router.get("/bookmarks", middleware.authenticate, postController.getBookmarks);
+router.delete("/bookmarks/:postId", middleware.authenticate, postController.removeBookmar);
 
 // admin
 router.delete("/:id", middleware.authenticate, middleware.authorization(["ADMIN"]), postController.deletePost);

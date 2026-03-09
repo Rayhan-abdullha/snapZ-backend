@@ -7,6 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum ContentStatus {
+  PUBLISHED
+  ARCHIVED
+}
+
+
 model User {
   id        String    @id @default(cuid())
   name      String
@@ -20,15 +32,16 @@ model User {
   comments  Comment[]
   likes     Like[]
   posts     Post[]
+  bookmarks Bookmark[]
   videos    Video[]
 }
 
 model Post {
   id         String        @id @default(cuid())
-  title      String
+  title      String?
   slug       String        @unique
   category   String
-  coverImage String
+  coverImage String?
   status     ContentStatus @default(PUBLISHED)
   content    String?
   blocks     Json?
@@ -38,6 +51,7 @@ model Post {
   authorId   String
   comments   Comment[]
   likes      Like[]
+  bookmarks Bookmark[]
   author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }
 
@@ -55,6 +69,7 @@ model Video {
   authorId  String
   comments  Comment[]
   likes     Like[]
+  bookmarks Bookmark[]
   author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
 }
 
@@ -86,12 +101,17 @@ model Like {
   @@unique([userId, videoId])
 }
 
-enum UserRole {
-  ADMIN
-  USER
-}
-
-enum ContentStatus {
-  PUBLISHED
-  ARCHIVED
+model Bookmark {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String?
+  post      Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+  videoId   String?
+  video     Video? @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  @@unique([userId, postId])
+  @@unique([userId, videoId])
+  
+  @@index([userId])
 }
