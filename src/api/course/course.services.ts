@@ -49,7 +49,8 @@ class CourseService {
       
         enrollments: {
           select: {
-            id: true
+            id: true,
+            userId: true
           }
         }
       },
