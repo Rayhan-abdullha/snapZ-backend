@@ -78,3 +78,9 @@ export interface Video extends BaseEntity {
     likes: number;
   };
 }
+
+export interface Bookmark extends BaseEntity {
+  userId: string;
+  postId?: string;
+  videoId?: string;
+}
