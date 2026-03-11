@@ -5,10 +5,31 @@ import courseController from "./course.controller";
 
 const router = express.Router();
 router.get(
+  "/",
+  courseController.getAllCourses
+);
+
+// myEnroll courses
+router.get(
   "/my-enrollments",
   middleware.authenticate,
   courseController.myEnrollments
 )
+// get single course
+router.get(
+  "/:id",
+  middleware.authenticate,
+  courseController.getSingleCourse
+);
+
+// ৩. কোর্স এনরোলমেন্ট (ইউজারের জন্য)
+router.post(
+  "/enroll",
+  middleware.authenticate,
+  middleware.validateRequest(enrollSchema),
+  courseController.enroll
+);
+
 
 // ১. নতুন কোর্স তৈরি (Initial)
 router.post(
@@ -27,33 +48,12 @@ router.put(
   courseController.updateContent
 );
 
-// ৩. কোর্স এনরোলমেন্ট (ইউজারের জন্য)
-router.post(
-  "/enroll",
-  middleware.authenticate,
-  middleware.validateRequest(enrollSchema),
-  courseController.enroll
-);
-
-// get single course
-router.get(
-  "/:id",
-  middleware.authenticate,
-  middleware.authorization(["ADMIN"]),
-  courseController.getSingleCourse
-);
-// myEnroll courses
-
 // delete course
 router.delete(
   "/:id",
   middleware.authenticate,
   middleware.authorization(["ADMIN"]),
   courseController.deleteCourse
-);
-router.get(
-  "/",
-  courseController.getAllCourses
 );
 
 export default router;
