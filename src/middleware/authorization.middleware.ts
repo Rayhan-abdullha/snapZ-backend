@@ -22,7 +22,6 @@ const authorization = (permissions: string[]) => {
     if (hasPermission) {
       next();
     } else {
-      console.log('forbiden error')
       next(lib.CustomError.forbidden());
     }
   };

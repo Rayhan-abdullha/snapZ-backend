@@ -43,8 +43,6 @@ const authenticate = async (
     req.user = user as User;
     next();
   } catch (error) {
-    console.log(error)
-    res.clearCookie('token', { httpOnly: true, path: '/' });
     next(CustomError.unauthorized());
     return;
   }
