@@ -10,27 +10,19 @@ interface AuthorizationRequest extends Request {
 
 const authorization = (permissions: string[]) => {
   return async (req: AuthorizationRequest, _res: Response, next: NextFunction): Promise<void> => {
-    const userId = req.user?.id; 
+    const user = req.user
 
-    if (!userId) {
+    if (!user) {
       next(lib.CustomError.unauthorized());
       return;
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id: userId }
-    });
-
-    if (!user) {
-      next(lib.CustomError.notFound());
-      return;
-    }
-
-    const hasPermission = permissions.some(permission => user.role === permission);
+    const hasPermission = permissions.some(permission => user?.role === permission);
 
     if (hasPermission) {
       next();
     } else {
+      console.log('forbiden error')
       next(lib.CustomError.forbidden());
     }
   };

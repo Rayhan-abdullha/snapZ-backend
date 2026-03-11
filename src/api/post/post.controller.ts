@@ -64,7 +64,6 @@ class PostController extends BaseController {
         data: await postService.getFeed()
       });
     } catch (error) {
-      console.log(error)
       next(error);
     }
   };

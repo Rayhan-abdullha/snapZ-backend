@@ -50,7 +50,6 @@ class CourseController extends BaseController {
         data: result
       });
     } catch (error) {
-      console.log(error)
       next(error);
     }
   };
@@ -64,6 +63,7 @@ class CourseController extends BaseController {
         data: result
       });
     } catch (error) {
+      console.log(error)
       next(error);
     }
   };
