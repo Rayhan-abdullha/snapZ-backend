@@ -47,6 +47,7 @@ class AuthService {
 
     return { accessToken, refreshToken, user: resUser };
   }
+  // TODO
   async refreshToken(token: string) {
     try {
       const payload = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET!);
@@ -82,12 +83,13 @@ class AuthService {
   }
   generateAccessToken(user: any) {
     return jwt.sign({ id: user.id, role: user.role, email: user.email, name: user.name  }, config.secret_access_token || "my_secret_key", {
-      expiresIn: "365d",
+      // expiresIn: "1 minute",
+      expiresIn: "7d",
     });
   }
   generateRefreshToken(userId: string) {
     return jwt.sign({ id: userId }, config.secret_access_token || "my_secret_key", {
-      expiresIn: "365d",
+      expiresIn: "7d",
     });
   }
   addAdmin(email: string) {

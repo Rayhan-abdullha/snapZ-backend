@@ -21,14 +21,16 @@ model User {
   likes     Like[]
   posts     Post[]
   videos    Video[]
+  bookmarks Bookmark[]
+  enrollments  Enrollment[]
 }
 
 model Post {
   id         String        @id @default(cuid())
-  title      String
+  title      String?
   slug       String        @unique
   category   String
-  coverImage String
+  coverImage String?
   status     ContentStatus @default(PUBLISHED)
   content    String?
   blocks     Json?
@@ -36,9 +38,10 @@ model Post {
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
   authorId   String
+  author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments   Comment[]
   likes      Like[]
-  author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  bookmarks  Bookmark[]   // ✅ add this
 }
 
 model Video {
@@ -53,9 +56,10 @@ model Video {
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
   authorId  String
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
   comments  Comment[]
   likes     Like[]
-  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  bookmarks  Bookmark[]   // ✅ add this
 }
 
 model Comment {
@@ -94,4 +98,68 @@ enum UserRole {
 enum ContentStatus {
   PUBLISHED
   ARCHIVED
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId    String?
+  post     Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+  videoId   String?
+  video Video? @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  @@unique([userId, postId])
+  @@unique([userId, videoId])
+  @@index([userId])
+}
+
+// কোর্স মডেল
+model Course {
+  id           String       @id @default(cuid())
+  title        String
+  instructor   String
+  category     String
+  price        Float
+  thumbnail    String       // ডিভাইস থেকে আপলোড করা ইমেজের পাথ বা ইউআরএল
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // রিলেশনসমূহ
+  sections     Section[]    // একটি কোর্সে অনেকগুলো সেকশন থাকতে পারে
+  enrollments  Enrollment[] // কতজন ইউজার এনরোল করেছে
+}
+
+// সেকশন মডেল (যেমন: Introduction to SnapZ)
+model Section {
+  id        String   @id @default(cuid())
+  title     String
+  order     Int      @default(0) // সেকশনগুলো কোন সিরিয়ালে থাকবে
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  lessons   Lesson[] // একটি সেকশনে অনেকগুলো লেসন থাকতে পারে
+}
+
+// লেসন/কন্টেন্ট মডেল (যেমন: ভিডিও টিউটোরিয়াল)
+model Lesson {
+  id        String   @id @default(cuid())
+  title     String
+  videoUrl  String   // আপনার ইউটিউব আইডি (lv7DKRIHJeg) বা ভিডিও পাথ
+  duration  String   // "05:20"
+  order     Int      @default(0)
+  sectionId String
+  section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+}
+
+// এনরোলমেন্ট মডেল (ইউজার এবং কোর্সের মধ্যবর্তী টেবিল)
+model Enrollment {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId   String
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  enrolledAt DateTime @default(now())
+
+  @@unique([userId, courseId])
 }

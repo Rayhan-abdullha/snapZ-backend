@@ -15,7 +15,9 @@ class PostController extends BaseController {
         message: "Post created successfully",
         data: await postService.createPost(userId, role, req.body)
       });
-    } catch (error) { next(error); }
+    } catch (error) {
+      next(error);
+    }
   };
   getMyPost = async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.userId

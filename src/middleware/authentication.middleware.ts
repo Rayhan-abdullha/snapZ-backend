@@ -12,33 +12,40 @@ type CustomRequest = Request & {
 
 const authenticate = async (
   req: CustomRequest,
-  _res: Response,
+  res: Response,
   next: NextFunction
-): Promise<void > => {
+): Promise<void> => {
   const token = req.headers.authorization?.split(' ')[1];
+
   if (!token) {
-    next(CustomError.unauthorized())
+    res.clearCookie('token', { httpOnly: true, path: '/' }); // clear cookie
+    next(CustomError.unauthorized());
     return;
   }
 
   try {
-    const decoded = jwt.verify(token, config.secret_access_token || 'my_secret_key' as string) as { id: string };
+    const decoded = jwt.verify(
+      token,
+      config.secret_access_token || 'my_secret_key'
+    ) as { id: string };
+
     const user = await prisma.user.findUnique({
-      where: {
-        id: decoded.id,
-      },
+      where: { id: decoded.id },
     });
 
     if (!user) {
+      // User deleted, remove token from cookies
+      res.clearCookie('token', { httpOnly: true, path: '/' });
       next(CustomError.unauthorized());
       return;
     }
-    req.user = user as User
+
+    req.user = user as User;
     next();
   } catch (error) {
+    res.clearCookie('token', { httpOnly: true, path: '/' });
     next(CustomError.unauthorized());
     return;
   }
 };
-
 export default authenticate;
