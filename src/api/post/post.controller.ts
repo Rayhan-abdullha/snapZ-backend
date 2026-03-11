@@ -63,7 +63,10 @@ class PostController extends BaseController {
         message: "Feed retrieved",
         data: await postService.getFeed()
       });
-    } catch (error) { next(error); }
+    } catch (error) {
+      console.log(error)
+      next(error);
+    }
   };
   getSingleArticle = async (req: Request, res: Response, next: NextFunction) => {
     const slug = req.params.slug
