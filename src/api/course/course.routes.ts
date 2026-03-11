@@ -34,10 +34,7 @@ router.post(
   middleware.validateRequest(enrollSchema),
   courseController.enroll
 );
-router.get(
-  "/",
-  courseController.getAllCourses
-);
+
 // get single course
 router.get(
   "/:id",
@@ -53,6 +50,10 @@ router.delete(
   middleware.authenticate,
   middleware.authorization(["ADMIN"]),
   courseController.deleteCourse
+);
+router.get(
+  "/",
+  courseController.getAllCourses
 );
 
 export default router;

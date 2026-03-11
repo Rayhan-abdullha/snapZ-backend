@@ -46,6 +46,7 @@ class CourseService {
             lessons: true,
           },
         },
+      
         enrollments: {
           select: {
             id: true

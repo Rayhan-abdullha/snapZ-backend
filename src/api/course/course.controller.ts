@@ -49,7 +49,10 @@ class CourseController extends BaseController {
         message: "All Courses",
         data: result
       });
-    } catch (error) { next(error); }
+    } catch (error) {
+      console.log(error)
+      next(error);
+    }
   };
   getSingleCourse = async (req: Request, res: Response, next: NextFunction) => {
     try {
