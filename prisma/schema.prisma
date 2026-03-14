@@ -7,88 +7,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String    @id @default(cuid())
-  name      String
-  email     String    @unique
-  password  String
-  image     String?
-  role      UserRole  @default(USER)
-  bio       String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  comments  Comment[]
-  likes     Like[]
-  posts     Post[]
-  videos    Video[]
-  bookmarks Bookmark[]
-  enrollments  Enrollment[]
-}
-
-model Post {
-  id         String        @id @default(cuid())
-  title      String?
-  slug       String        @unique
-  category   String
-  coverImage String?
-  status     ContentStatus @default(PUBLISHED)
-  content    String?
-  blocks     Json?
-  viewCount  Int           @default(0)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  authorId   String
-  author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comments   Comment[]
-  likes      Like[]
-  bookmarks  Bookmark[]   // ✅ add this
-}
-
-model Video {
-  id        String        @id @default(cuid())
-  title     String
-  url       String
-  category  String
-  tags      String[]
-  status    ContentStatus @default(PUBLISHED)
-  isLive    Boolean       @default(false)
-  viewCount Int           @default(0)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  authorId  String
-  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  comments  Comment[]
-  likes     Like[]
-  bookmarks  Bookmark[]   // ✅ add this
-}
-
-model Comment {
-  id        String    @id @default(cuid())
-  message   String
-  createdAt DateTime  @default(now())
-  authorId  String
-  postId    String?
-  videoId   String?
-  parentId  String?
-  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  replies   Comment[] @relation("CommentToComment")
-  post      Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  video     Video?    @relation(fields: [videoId], references: [id], onDelete: Cascade)
-}
-
-model Like {
-  id      String  @id @default(cuid())
-  userId  String
-  postId  String?
-  videoId String?
-  post    Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  video   Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, postId])
-  @@unique([userId, videoId])
-}
+//////////////////////
+// ENUMS
+//////////////////////
 
 enum UserRole {
   ADMIN
@@ -100,66 +21,254 @@ enum ContentStatus {
   ARCHIVED
 }
 
-model Bookmark {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+//////////////////////
+// USER
+//////////////////////
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String
+  image     String?
+  role      UserRole  @default(USER)
+  bio       String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  comments  Comment[]
+  likes     Like[]
+  posts     Post[]
+  videos    Video[]
+  bookmarks Bookmark[]
+  enrollments Enrollment[]
+
+  sentMessages     Message[] @relation("sentMessages")
+  receivedMessages Message[] @relation("receivedMessages")
+}
+
+//////////////////////
+// POST
+//////////////////////
+
+model Post {
+  id         String        @id @default(cuid())
+  title      String?
+  slug       String        @unique
+  category   String
+  coverImage String?
+  status     ContentStatus @default(PUBLISHED)
+  content    String?
+  blocks     Json?
+
+  viewCount  Int           @default(0)
+
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  authorId   String
+  author     User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  comments   Comment[]
+  likes      Like[]
+  bookmarks  Bookmark[]
+}
+
+//////////////////////
+// VIDEO
+//////////////////////
+
+model Video {
+  id        String        @id @default(cuid())
+  title     String
+  url       String
+  category  String
+  tags      String[]
+
+  status    ContentStatus @default(PUBLISHED)
+  isLive    Boolean       @default(false)
+  viewCount Int           @default(0)
+
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  authorId  String
+  author    User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  comments  Comment[]
+  likes     Like[]
+  bookmarks Bookmark[]
+}
+
+//////////////////////
+// COMMENT
+//////////////////////
+
+model Comment {
+  id        String    @id @default(cuid())
+  message   String
+
+  createdAt DateTime  @default(now())
+
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
   postId    String?
-  post     Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post      Post?     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
   videoId   String?
-  video Video? @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  video     Video?    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  parentId  String?
+  parent    Comment?  @relation("CommentToComment", fields: [parentId], references: [id])
+  replies   Comment[] @relation("CommentToComment")
+}
+
+//////////////////////
+// LIKE
+//////////////////////
+
+model Like {
+  id      String  @id @default(cuid())
+
+  userId  String
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId  String?
+  post    Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  videoId String?
+  video   Video?  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
   @@unique([userId, postId])
   @@unique([userId, videoId])
+}
+
+//////////////////////
+// BOOKMARK
+//////////////////////
+
+model Bookmark {
+  id        String   @id @default(cuid())
+
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId    String?
+  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  videoId   String?
+  video     Video?   @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@unique([userId, videoId])
+
   @@index([userId])
 }
 
-// কোর্স মডেল
+//////////////////////
+// COURSE
+//////////////////////
+
 model Course {
-  id           String       @id @default(cuid())
-  title        String
-  instructor   String
-  category     String
-  price        Float
-  thumbnail    String       // ডিভাইস থেকে আপলোড করা ইমেজের পাথ বা ইউআরএল
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
+  id         String       @id @default(cuid())
+  title      String
+  instructor String
+  category   String
+  price      Float
+  thumbnail  String
 
-  // রিলেশনসমূহ
-  sections     Section[]    // একটি কোর্সে অনেকগুলো সেকশন থাকতে পারে
-  enrollments  Enrollment[] // কতজন ইউজার এনরোল করেছে
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  sections    Section[]
+  enrollments Enrollment[]
 }
 
-// সেকশন মডেল (যেমন: Introduction to SnapZ)
+//////////////////////
+// SECTION
+//////////////////////
+
 model Section {
-  id        String   @id @default(cuid())
-  title     String
-  order     Int      @default(0) // সেকশনগুলো কোন সিরিয়ালে থাকবে
-  courseId  String
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  id       String  @id @default(cuid())
+  title    String
+  order    Int     @default(0)
 
-  lessons   Lesson[] // একটি সেকশনে অনেকগুলো লেসন থাকতে পারে
+  courseId String
+  course   Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  lessons  Lesson[]
 }
 
-// লেসন/কন্টেন্ট মডেল (যেমন: ভিডিও টিউটোরিয়াল)
+//////////////////////
+// LESSON
+//////////////////////
+
 model Lesson {
   id        String   @id @default(cuid())
   title     String
-  videoUrl  String   // আপনার ইউটিউব আইডি (lv7DKRIHJeg) বা ভিডিও পাথ
-  duration  String   // "05:20"
+  videoUrl  String
+  duration  String
   order     Int      @default(0)
+
   sectionId String
   section   Section  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
 }
 
-// এনরোলমেন্ট মডেল (ইউজার এবং কোর্সের মধ্যবর্তী টেবিল)
+//////////////////////
+// ENROLLMENT
+//////////////////////
+
 model Enrollment {
   id         String   @id @default(cuid())
+
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   courseId   String
   course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
   enrolledAt DateTime @default(now())
 
   @@unique([userId, courseId])
+}
+
+//////////////////////
+// CHAT SYSTEM
+//////////////////////
+
+model Conversation {
+  id        String   @id @default(cuid())
+
+  user1Id   String
+  user2Id   String
+
+  createdAt DateTime @default(now())
+
+  messages  Message[]
+
+  @@unique([user1Id, user2Id])
+}
+
+model Message {
+  id             String   @id @default(cuid())
+
+  conversationId String
+  senderId       String
+  receiverId     String
+
+  text           String
+  seen           Boolean  @default(false)
+
+  createdAt      DateTime @default(now())
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+
+  sender         User @relation("sentMessages", fields: [senderId], references: [id])
+  receiver       User @relation("receivedMessages", fields: [receiverId], references: [id])
+
+  @@index([conversationId])
 }
